@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "postEdit": [
+      {
+        "command": "php ./vendor/bin/pint --dirty 2>/dev/null || true",
+        "description": "Auto-format edited PHP files with Pint"
+      }
+    ],
+    "preCommit": [
+      {
+        "command": "php ./vendor/bin/pint --test",
+        "description": "Verify code style passes"
+      },
+      {
+        "command": "php ./vendor/bin/phpstan analyse --memory-limit=512M --no-progress",
+        "description": "Run static analysis"
+      },
+      {
+        "command": "php artisan test --parallel --no-coverage",
+        "description": "Run test suite"
+      }
+    ]
+  }
+}

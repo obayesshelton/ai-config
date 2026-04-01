@@ -1,0 +1,48 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are reviewing a Laravel pull request. Read the diff and the project's
+            AGENTS.md file for context.
+
+            Focus ONLY on high-signal issues:
+            1. Security vulnerabilities (injection, XSS, auth bypass, mass assignment)
+            2. Logic errors that will produce wrong results
+            3. Missing validation or authorization
+            4. N+1 queries and obvious performance problems
+            5. Missing tests for new behavior
+            6. Violations of conventions defined in AGENTS.md
+
+            Do NOT flag:
+            - Formatting issues (Pint handles these)
+            - Type errors (PHPStan handles these)
+            - Nitpicks or style preferences
+
+            Post findings as inline PR comments on the relevant lines.
+            If no real issues are found, post a single comment:
+            "✅ No issues found. Checked for security, logic errors, N+1 queries, and convention compliance."

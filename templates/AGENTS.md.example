@@ -1,0 +1,60 @@
+# Project: [YOUR PROJECT NAME]
+
+> Copy this file to your project root as `AGENTS.md` and fill in the details.
+> Delete this instruction block when done.
+
+## Stack
+
+- PHP 8.3 / Laravel 12
+- Database: [MySQL 8 / PostgreSQL 16 / SQLite]
+- Frontend: [Livewire 3 / Inertia + Vue / Inertia + React / Blade]
+- Queue: [Redis + Horizon / Database / SQS]
+- Testing: Pest 4
+- Hosting: [Laravel Cloud / Forge / Vapor]
+
+## Architecture
+
+- **Controllers**: Slim, single-responsibility. Max ~15 lines per method.
+- **Business Logic**: Action classes in `app/Actions/`.
+- **Validation**: Form Requests only. Never inline `$request->validate()`.
+- **API Responses**: Always use JsonResource classes.
+- **Models**: Use `$fillable` explicitly. Define relationships with return types.
+- **Queued Jobs**: Anything over 500ms should be queued.
+
+## Key Packages
+
+<!-- List packages that affect how code should be written -->
+- [e.g., spatie/laravel-permission — roles & permissions]
+- [e.g., spatie/laravel-data — DTOs]
+- [e.g., spatie/laravel-media-library — file uploads]
+- [e.g., laravel/horizon — queue monitoring]
+
+## Domain Context
+
+<!-- Briefly describe what this app does so Claude understands the domain -->
+[e.g., "This is a CRM for real estate agents. Contacts belong to Organizations.
+Agents can only see contacts assigned to them. Admins see everything."]
+
+## Important Patterns
+
+<!-- Describe any non-obvious patterns in this project -->
+[e.g., "Multi-tenancy: every query is scoped to the current team via a global scope.
+Never query without the team scope."]
+
+## Quality Gates
+
+```bash
+# These must all pass before any commit:
+./vendor/bin/pint --test                              # Code style
+./vendor/bin/phpstan analyse --memory-limit=512M      # Static analysis (level 8+)
+php artisan test --parallel --coverage --min=100       # Tests + 100% coverage
+```
+
+## What NOT To Do
+
+- Do NOT create Repository classes. Use Eloquent directly or Action classes.
+- Do NOT create Service classes that just proxy model methods.
+- Do NOT create Interfaces for classes with only one implementation.
+- Do NOT use `env()` outside of `config/` files.
+- Do NOT lazy load relationships. Use `preventLazyLoading()`.
+- Do NOT catch exceptions just to log and re-throw.
